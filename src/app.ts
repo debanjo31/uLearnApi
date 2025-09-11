@@ -6,6 +6,8 @@ import mongoose from 'mongoose';
 import config from './config/config.js';
 import { apiReference } from '@scalar/express-api-reference';
 import { logger, logInfo, logError } from './utils/index.js';
+import authRoutes from './routes/authRoutes.js';
+import { generalLimiter } from './middlewares/rateLimiter.js';
 
 // Connect to MongoDB
 mongoose
@@ -64,9 +66,31 @@ app.use(
   }),
 );
 
+// Apply general rate limiting to all routes
+app.use(generalLimiter);
+
 // Routes
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.json({
+    success: true,
+    message: 'Welcome to uLearn API',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      docs: '/docs',
+    },
+  });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+
+// 404 handler for undefined routes
+app.all('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.method} ${req.path} not found`,
+  });
 });
 
 // Global error handler (should be after routes)

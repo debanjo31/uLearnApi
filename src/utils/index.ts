@@ -11,3 +11,15 @@ export {
   logHttp,
   logDebug,
 } from './logger.js';
+
+// Export auth utilities
+export {
+  hashPassword,
+  comparePassword,
+  generateAccessToken,
+  generateRefreshToken,
+  verifyAccessToken,
+  verifyRefreshToken,
+  generateTokens,
+  extractTokenFromHeader,
+} from './auth.js';
