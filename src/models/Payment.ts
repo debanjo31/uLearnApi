@@ -62,7 +62,6 @@ PaymentSchema.virtual('course', {
 });
 
 // Indexes for better performance
-PaymentSchema.index({ transactionId: 1 }, { unique: true });
 PaymentSchema.index({ userId: 1 });
 PaymentSchema.index({ courseId: 1 });
 PaymentSchema.index({ status: 1 });

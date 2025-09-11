@@ -12,9 +12,7 @@ import type {
   IApiResponse,
 } from '../interfaces/index.js';
 
-/**
- * Student Registration
- */
+// Student Registration
 export const registerStudent = async (req: Request, res: Response) => {
   try {
     const { email, password, name } = req.body;
@@ -75,9 +73,7 @@ export const registerStudent = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * Instructor Registration
- */
+// Instructor Registration
 export const registerInstructor = async (req: Request, res: Response) => {
   try {
     const { email, password, name, bio } = req.body;
@@ -139,9 +135,7 @@ export const registerInstructor = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * Login (both students and instructors)
- */
+//Login (both students and instructors)
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;

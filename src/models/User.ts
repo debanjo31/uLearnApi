@@ -14,6 +14,7 @@ const UserSchema: Schema = new Schema(
       type: String,
       required: true,
       minlength: 6,
+      select: false, // Exclude password from query results by default
     },
     name: {
       type: String,
@@ -89,9 +90,5 @@ UserSchema.virtual('notifications', {
   localField: '_id',
   foreignField: 'userId',
 });
-
-// Index for better performance
-UserSchema.index({ email: 1 });
-UserSchema.index({ role: 1 });
 
 export default mongoose.model<IUser>('User', UserSchema);

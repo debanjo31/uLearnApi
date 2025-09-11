@@ -158,3 +158,123 @@ export const profileUpdateSchema = {
       .optional(),
   }),
 };
+
+/**
+ * Course creation validation schema
+ */
+export const createCourseSchema = {
+  body: z.object({
+    title: z
+      .string()
+      .min(3, 'Course title must be at least 3 characters long')
+      .max(200, 'Course title must not exceed 200 characters')
+      .transform((str) => str.trim()),
+
+    description: z
+      .string()
+      .min(10, 'Course description must be at least 10 characters long')
+      .max(2000, 'Course description must not exceed 2000 characters')
+      .transform((str) => str.trim()),
+
+    category: z
+      .string()
+      .min(2, 'Category must be at least 2 characters long')
+      .transform((str) => str.trim()),
+
+    level: z.enum(['beginner', 'intermediate', 'advanced'], {
+      errorMap: () => ({ message: 'Level must be beginner, intermediate, or advanced' }),
+    }),
+
+    price: z
+      .number()
+      .min(0, 'Price cannot be negative')
+      .max(9999.99, 'Price cannot exceed $9999.99'),
+
+    duration: z
+      .number()
+      .min(0.5, 'Duration must be at least 0.5 hours')
+      .max(500, 'Duration cannot exceed 500 hours')
+      .optional(),
+  }),
+};
+
+/**
+ * Course update validation schema
+ */
+export const updateCourseSchema = {
+  body: z.object({
+    title: z
+      .string()
+      .min(3, 'Course title must be at least 3 characters long')
+      .max(200, 'Course title must not exceed 200 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    description: z
+      .string()
+      .min(10, 'Course description must be at least 10 characters long')
+      .max(2000, 'Course description must not exceed 2000 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    category: z
+      .string()
+      .min(2, 'Category must be at least 2 characters long')
+      .transform((str) => str.trim())
+      .optional(),
+
+    level: z
+      .enum(['beginner', 'intermediate', 'advanced'], {
+        errorMap: () => ({ message: 'Level must be beginner, intermediate, or advanced' }),
+      })
+      .optional(),
+
+    price: z
+      .number()
+      .min(0, 'Price cannot be negative')
+      .max(9999.99, 'Price cannot exceed $9999.99')
+      .optional(),
+
+    duration: z
+      .number()
+      .min(0.5, 'Duration must be at least 0.5 hours')
+      .max(500, 'Duration cannot exceed 500 hours')
+      .optional(),
+  }),
+};
+
+/**
+ * Course status update validation schema
+ */
+export const courseStatusSchema = {
+  body: z.object({
+    status: z.enum(['draft', 'published', 'unpublished'], {
+      errorMap: () => ({ message: 'Status must be draft, published, or unpublished' }),
+    }),
+  }),
+};
+
+/**
+ * Course query validation schema
+ */
+export const courseQuerySchema = {
+  query: z.object({
+    page: z.string().regex(/^\d+$/, 'Page must be a positive number').optional(),
+    limit: z.string().regex(/^\d+$/, 'Limit must be a positive number').optional(),
+    category: z.string().optional(),
+    level: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+    status: z.enum(['draft', 'published', 'unpublished']).optional(),
+    search: z.string().optional(),
+    sortBy: z.enum(['createdAt', 'title', 'price', 'rating', 'enrollmentCount']).optional(),
+    sortOrder: z.enum(['asc', 'desc']).optional(),
+  }),
+};
+
+/**
+ * Course ID parameter validation schema
+ */
+export const courseParamsSchema = {
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid course ID format'),
+  }),
+};

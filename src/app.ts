@@ -5,9 +5,11 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import mongoose from 'mongoose';
 import config from './config/config.js';
 import { apiReference } from '@scalar/express-api-reference';
+import swaggerJSDoc from 'swagger-jsdoc';
 import { logger, logInfo, logError } from './utils/index.js';
 import authRoutes from './routes/authRoutes.js';
 import { generalLimiter } from './middlewares/rateLimiter.js';
+import { swaggerOptions } from '#utils/swaggerSpec.js';
 
 // Connect to MongoDB
 mongoose
@@ -51,18 +53,26 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Alternative approach: Disable CSP for docs route only
+// Disable CSP for Scalar docs
 app.use('/docs', (req, res, next) => {
-  // Disable CSP for Scalar docs
   res.removeHeader('Content-Security-Policy');
   next();
+});
+
+
+const openapiSpec = swaggerJSDoc(swaggerOptions);
+
+// Serve OpenAPI spec for Scalar
+app.get('/openapi.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(openapiSpec);
 });
 
 app.use(
   '/docs',
   apiReference({
     theme: 'purple',
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+    url: '/openapi.json',
   }),
 );
 
@@ -84,14 +94,6 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-
-// 404 handler for undefined routes
-app.all('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.method} ${req.path} not found`,
-  });
-});
 
 // Global error handler (should be after routes)
 app.use(errorHandler);
