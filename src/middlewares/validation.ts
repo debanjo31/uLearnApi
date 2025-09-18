@@ -182,7 +182,7 @@ export const createCourseSchema = {
       .transform((str) => str.trim()),
 
     level: z.enum(['beginner', 'intermediate', 'advanced'], {
-      errorMap: () => ({ message: 'Level must be beginner, intermediate, or advanced' }),
+      message: 'Level must be beginner, intermediate, or advanced',
     }),
 
     price: z
@@ -225,7 +225,7 @@ export const updateCourseSchema = {
 
     level: z
       .enum(['beginner', 'intermediate', 'advanced'], {
-        errorMap: () => ({ message: 'Level must be beginner, intermediate, or advanced' }),
+        message: 'Level must be beginner, intermediate, or advanced',
       })
       .optional(),
 
@@ -249,7 +249,7 @@ export const updateCourseSchema = {
 export const courseStatusSchema = {
   body: z.object({
     status: z.enum(['draft', 'published', 'unpublished'], {
-      errorMap: () => ({ message: 'Status must be draft, published, or unpublished' }),
+      message: 'Status must be draft, published, or unpublished',
     }),
   }),
 };
@@ -259,13 +259,21 @@ export const courseStatusSchema = {
  */
 export const courseQuerySchema = {
   query: z.object({
-    page: z.string().regex(/^\d+$/, 'Page must be a positive number').optional(),
-    limit: z.string().regex(/^\d+$/, 'Limit must be a positive number').optional(),
+    page: z
+      .string()
+      .regex(/^\d+$/, 'Page must be a positive number')
+      .optional(),
+    limit: z
+      .string()
+      .regex(/^\d+$/, 'Limit must be a positive number')
+      .optional(),
     category: z.string().optional(),
     level: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
     status: z.enum(['draft', 'published', 'unpublished']).optional(),
     search: z.string().optional(),
-    sortBy: z.enum(['createdAt', 'title', 'price', 'rating', 'enrollmentCount']).optional(),
+    sortBy: z
+      .enum(['createdAt', 'title', 'price', 'rating', 'enrollmentCount'])
+      .optional(),
     sortOrder: z.enum(['asc', 'desc']).optional(),
   }),
 };
@@ -276,5 +284,156 @@ export const courseQuerySchema = {
 export const courseParamsSchema = {
   params: z.object({
     id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid course ID format'),
+  }),
+};
+
+/**
+ * Section creation validation schema
+ */
+export const createSectionSchema = {
+  body: z.object({
+    title: z
+      .string()
+      .min(3, 'Section title must be at least 3 characters long')
+      .max(200, 'Section title must not exceed 200 characters')
+      .transform((str) => str.trim()),
+
+    description: z
+      .string()
+      .max(1000, 'Section description must not exceed 1000 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    learningObjective: z
+      .string()
+      .max(500, 'Learning objective must not exceed 500 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    order: z
+      .number()
+      .int('Order must be a whole number')
+      .min(1, 'Order must be at least 1'),
+  }),
+};
+
+/**
+ * Section update validation schema
+ */
+export const updateSectionSchema = {
+  body: z.object({
+    title: z
+      .string()
+      .min(3, 'Section title must be at least 3 characters long')
+      .max(200, 'Section title must not exceed 200 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    description: z
+      .string()
+      .max(1000, 'Section description must not exceed 1000 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    learningObjective: z
+      .string()
+      .max(500, 'Learning objective must not exceed 500 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    order: z
+      .number()
+      .int('Order must be a whole number')
+      .min(1, 'Order must be at least 1')
+      .optional(),
+  }),
+};
+
+/**
+ * Module creation validation schema
+ */
+export const createModuleSchema = {
+  body: z.object({
+    title: z
+      .string()
+      .min(3, 'Module title must be at least 3 characters long')
+      .max(200, 'Module title must not exceed 200 characters')
+      .transform((str) => str.trim()),
+
+    type: z.enum(['video', 'video_slide', 'article', 'quiz', 'assignment'], {
+      message: 'Type must be video, video_slide, article, quiz, or assignment',
+    }),
+
+    content: z
+      .string()
+      .min(1, 'Content is required')
+      .transform((str) => str.trim()),
+
+    order: z
+      .number()
+      .int('Order must be a whole number')
+      .min(1, 'Order must be at least 1'),
+
+    duration: z.number().min(0, 'Duration must be non-negative').optional(),
+  }),
+};
+
+/**
+ * Module update validation schema
+ */
+export const updateModuleSchema = {
+  body: z.object({
+    title: z
+      .string()
+      .min(3, 'Module title must be at least 3 characters long')
+      .max(200, 'Module title must not exceed 200 characters')
+      .transform((str) => str.trim())
+      .optional(),
+
+    type: z
+      .enum(['video', 'video_slide', 'article', 'quiz', 'assignment'], {
+        message:
+          'Type must be video, video_slide, article, quiz, or assignment',
+      })
+      .optional(),
+
+    content: z
+      .string()
+      .min(1, 'Content is required')
+      .transform((str) => str.trim())
+      .optional(),
+
+    order: z
+      .number()
+      .int('Order must be a whole number')
+      .min(1, 'Order must be at least 1')
+      .optional(),
+
+    duration: z.number().min(0, 'Duration must be non-negative').optional(),
+  }),
+};
+
+/**
+ * Section and Module ID parameter validation schema
+ */
+export const sectionParamsSchema = {
+  params: z.object({
+    courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid course ID format'),
+    sectionId: z
+      .string()
+      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid section ID format')
+      .optional(),
+  }),
+};
+
+export const moduleParamsSchema = {
+  params: z.object({
+    sectionId: z
+      .string()
+      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid section ID format'),
+    moduleId: z
+      .string()
+      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid module ID format')
+      .optional(),
   }),
 };

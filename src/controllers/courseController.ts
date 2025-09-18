@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import Course from '../models/Course.js';
 import { logError, logInfo } from '../utils/index.js';
-import { AuthRequest } from '../interfaces/index.js';
+import type { AuthRequest } from '../interfaces/index.js';
 
 // Create a new course (Instructors only)
 export const createCourse = async (req: AuthRequest, res: Response) => {
@@ -65,11 +65,11 @@ export const getCourses = async (req: Request, res: Response) => {
 
     // Build filter object
     const filter: any = {};
-    
+
     if (category) filter.category = category;
     if (level) filter.level = level;
     if (status) filter.status = status;
-    
+
     if (search) {
       filter.$text = { $search: search as string };
     }
@@ -219,13 +219,14 @@ export const updateCourse = async (req: AuthRequest, res: Response) => {
     // Don't allow updating instructorId
     delete updates.instructorId;
 
-    const updatedCourse = await Course.findByIdAndUpdate(
-      id,
-      updates,
-      { new: true, runValidators: true }
-    ).populate('instructor', 'name profilePicture');
+    const updatedCourse = await Course.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    }).populate('instructor', 'name profilePicture');
 
-    logInfo(`Course updated: ${updatedCourse?.title} by instructor ${instructorId}`);
+    logInfo(
+      `Course updated: ${updatedCourse?.title} by instructor ${instructorId}`,
+    );
 
     res.json({
       success: true,
@@ -325,7 +326,9 @@ export const toggleCourseStatus = async (req: AuthRequest, res: Response) => {
     course.status = status;
     await course.save();
 
-    logInfo(`Course status changed to ${status}: ${course.title} by instructor ${instructorId}`);
+    logInfo(
+      `Course status changed to ${status}: ${course.title} by instructor ${instructorId}`,
+    );
 
     res.json({
       success: true,
@@ -353,10 +356,10 @@ export const getCourseStats = async (req: AuthRequest, res: Response) => {
           _id: null,
           totalCourses: { $sum: 1 },
           publishedCourses: {
-            $sum: { $cond: [{ $eq: ['$status', 'published'] }, 1, 0] }
+            $sum: { $cond: [{ $eq: ['$status', 'published'] }, 1, 0] },
           },
           draftCourses: {
-            $sum: { $cond: [{ $eq: ['$status', 'draft'] }, 1, 0] }
+            $sum: { $cond: [{ $eq: ['$status', 'draft'] }, 1, 0] },
           },
           totalEnrollments: { $sum: '$enrollmentCount' },
           averageRating: { $avg: '$rating' },

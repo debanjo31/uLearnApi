@@ -8,6 +8,8 @@ import { apiReference } from '@scalar/express-api-reference';
 import swaggerJSDoc from 'swagger-jsdoc';
 import { logger, logInfo, logError } from './utils/index.js';
 import authRoutes from './routes/authRoutes.js';
+import courseRoutes from './routes/courseRoutes.js';
+import contentRoutes from './routes/contentRoutes.js';
 import { generalLimiter } from './middlewares/rateLimiter.js';
 import { swaggerOptions } from '#utils/swaggerSpec.js';
 
@@ -59,7 +61,6 @@ app.use('/docs', (req, res, next) => {
   next();
 });
 
-
 const openapiSpec = swaggerJSDoc(swaggerOptions);
 
 // Serve OpenAPI spec for Scalar
@@ -87,6 +88,8 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',
+      courses: '/api/courses',
+      content: '/api/content',
       docs: '/docs',
     },
   });
@@ -94,6 +97,8 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/content', contentRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);

@@ -1,4 +1,5 @@
 import mongoose, { Document } from 'mongoose';
+import type { Request } from 'express';
 
 // User Interface
 export interface IUser extends Document {
@@ -240,4 +241,13 @@ export interface IJwtPayload {
   role: string;
   iat?: number;
   exp?: number;
+}
+
+// Extended Request interface for authenticated routes
+export interface AuthRequest extends Omit<Request, 'user'> {
+  user?: {
+    id: string;
+    email: string;
+    role: 'student' | 'instructor' | 'admin';
+  };
 }
