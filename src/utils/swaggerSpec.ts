@@ -114,14 +114,10 @@ export const swaggerOptions = {
             email: {
               type: 'string',
               format: 'email',
-              example: 'instructor@example.com',
+              example: 'brad@example.com',
             },
-            password: { type: 'string', minLength: 6, example: 'password123' },
-            name: { type: 'string', example: 'Jane Smith' },
-            bio: {
-              type: 'string',
-              example: 'Experienced educator with 10+ years',
-            },
+            password: { type: 'string', minLength: 6, example: 'Pass1234$' },
+            name: { type: 'string', example: 'Brad Pitt' },
           },
         },
         LoginRequest: {
@@ -133,7 +129,7 @@ export const swaggerOptions = {
               format: 'email',
               example: 'user@example.com',
             },
-            password: { type: 'string', example: 'password123' },
+            password: { type: 'string', example: 'Pass1234$' },
           },
         },
         ProfileUpdate: {
@@ -151,11 +147,11 @@ export const swaggerOptions = {
           type: 'object',
           required: ['currentPassword', 'newPassword'],
           properties: {
-            currentPassword: { type: 'string', example: 'oldpassword123' },
+            currentPassword: { type: 'string', example: 'oldPass1234$' },
             newPassword: {
               type: 'string',
               minLength: 6,
-              example: 'newpassword123',
+              example: 'newPass1234$',
             },
           },
         },

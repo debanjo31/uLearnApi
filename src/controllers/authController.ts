@@ -41,22 +41,26 @@ export const registerStudent = async (req: Request, res: Response) => {
 
     logInfo(`New student registered: ${email}`);
 
-    // Generate tokens
+    // Generate totkens
     const tokens = generateTokens({
-      userId: user._id.toString(),
+      userId: (user._id as string).toString(),
       email: user.email,
       role: user.role,
     });
 
-    // Remove password from response
-    console.log(user);
-    delete user.password;
+    // Create user response without password
+    const userResponse = {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
 
     const response: IApiResponse<IAuthResponse> = {
       success: true,
       message: 'Student registered successfully',
       data: {
-        user: user,
+        user: userResponse as IUser,
         token: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
@@ -105,19 +109,24 @@ export const registerInstructor = async (req: Request, res: Response) => {
 
     // Generate tokens
     const tokens = generateTokens({
-      userId: user._id.toString(),
+      userId: (user._id as string).toString(),
       email: user.email,
       role: user.role,
     });
 
-    // Remove password from response
-    delete user.password;
+    // Create user response without password
+    const userResponse = {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
 
     const response: IApiResponse<IAuthResponse> = {
       success: true,
       message: 'Instructor registered successfully',
       data: {
-        user: user,
+        user: userResponse as IUser,
         token: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
@@ -161,19 +170,19 @@ export const login = async (req: Request, res: Response) => {
 
     // Generate tokens
     const tokens = generateTokens({
-      userId: user._id.toString(),
+      userId: (user._id as string).toString(),
       email: user.email,
       role: user.role,
     });
 
-    // Remove password from response
-    delete user.password;
+    // Create user response without password
+   delete user.password;
 
     const response: IApiResponse<IAuthResponse> = {
       success: true,
       message: 'Login successful',
       data: {
-        user: user,
+        user: user as IUser,
         token: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
@@ -195,7 +204,7 @@ export const login = async (req: Request, res: Response) => {
  */
 export const getProfile = async (req: Request, res: Response) => {
   try {
-    const user = User.findById(req.userId).select('-password');
+    const user = await User.findById(req.userId).select('-password');
 
     if (!user) {
       return res.status(404).json({

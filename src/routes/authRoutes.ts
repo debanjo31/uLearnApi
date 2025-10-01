@@ -16,7 +16,7 @@ import {
   passwordChangeSchema,
   profileUpdateSchema,
 } from '../middlewares/validation.js';
-import { authenticate } from '../middlewares/auth.js';
+import { authenticate, authorize } from '../middlewares/auth.js';
 import {
   authLimiter,
   passwordResetLimiter,
@@ -101,6 +101,8 @@ router.post(
   '/register/instructor',
   authLimiter,
   validateRequest(instructorRegistrationSchema),
+  authenticate,
+  authorize('admin'),
   registerInstructor,
 );
 
