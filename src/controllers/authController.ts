@@ -49,14 +49,14 @@ export const registerStudent = async (req: Request, res: Response) => {
     });
 
     // Remove password from response
-    const userResponse = user.toObject();
-    delete userResponse.password;
+    console.log(user);
+    delete user.password;
 
     const response: IApiResponse<IAuthResponse> = {
       success: true,
       message: 'Student registered successfully',
       data: {
-        user: userResponse,
+        user: user,
         token: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
@@ -111,14 +111,13 @@ export const registerInstructor = async (req: Request, res: Response) => {
     });
 
     // Remove password from response
-    const userResponse = user.toObject();
-    delete userResponse.password;
+    delete user.password;
 
     const response: IApiResponse<IAuthResponse> = {
       success: true,
       message: 'Instructor registered successfully',
       data: {
-        user: userResponse,
+        user: user,
         token: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
@@ -168,14 +167,13 @@ export const login = async (req: Request, res: Response) => {
     });
 
     // Remove password from response
-    const userResponse = user.toObject();
-    delete userResponse.password;
+    delete user.password;
 
     const response: IApiResponse<IAuthResponse> = {
       success: true,
       message: 'Login successful',
       data: {
-        user: userResponse,
+        user: user,
         token: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       },
@@ -197,9 +195,16 @@ export const login = async (req: Request, res: Response) => {
  */
 export const getProfile = async (req: Request, res: Response) => {
   try {
-    const user = req.user!;
+    const user = User.findById(req.userId).select('-password');
 
-    const response: IApiResponse<Partial<IUser>> = {
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    const response = {
       success: true,
       message: 'Profile retrieved successfully',
       data: user,
@@ -313,11 +318,13 @@ export const changePassword = async (req: Request, res: Response) => {
 };
 
 /**
- * Logout (placeholder - in a real app you might blacklist the token)
+ * Logout
  */
 export const logout = async (req: Request, res: Response) => {
   try {
     logInfo(`User logged out: ${req.user?.email}`);
+
+    //Store in redis to blacklist token
 
     res.json({
       success: true,
